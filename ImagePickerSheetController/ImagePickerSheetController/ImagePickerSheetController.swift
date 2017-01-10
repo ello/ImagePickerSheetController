@@ -429,13 +429,8 @@ extension ImagePickerSheetController: UICollectionViewDelegate {
         if let maximumSelection = maximumSelection {
             if selectedAssetIndices.count >= maximumSelection,
                 let previousItemIndex = selectedAssetIndices.first {
-                    let deselectedAsset = selectedAssets[previousItemIndex]
-                    delegate?.controller?(self, willDeselectAsset: deselectedAsset)
-                
                     supplementaryViews[previousItemIndex]?.selected = false
                     selectedAssetIndices.remove(at: 0)
-                
-                    delegate?.controller?(self, didDeselectAsset: deselectedAsset)
             }
         }
         
