@@ -427,15 +427,11 @@ extension ImagePickerSheetController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let maximumSelection = maximumSelection {
-            if selectedAssetIndices.count >= maximumSelection,
-                let previousItemIndex = selectedAssetIndices.first {
-                    let deselectedAsset = selectedAssets[previousItemIndex]
-                    delegate?.controller?(self, willDeselectAsset: deselectedAsset)
-                
-                    supplementaryViews[previousItemIndex]?.selected = false
-                    selectedAssetIndices.remove(at: 0)
-                
-                    delegate?.controller?(self, didDeselectAsset: deselectedAsset)
+            while selectedAssetIndices.count >= maximumSelection,
+                let previousItemIndex = selectedAssetIndices.first
+            {
+                deselectItemAt(index: previousItemIndex)
+                collectionView.deselectItem(at: IndexPath(item: indexPath.item, section: previousItemIndex), animated: false)
             }
         }
         
@@ -469,21 +465,27 @@ extension ImagePickerSheetController: UICollectionViewDelegate {
         
         delegate?.controller?(self, didSelectAsset: selectedAsset)
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        if let index = selectedAssetIndices.index(of: indexPath.section) {
-            let deselectedAsset = selectedAssets[index]
-            delegate?.controller?(self, willDeselectAsset: deselectedAsset)
-            
-            selectedAssetIndices.remove(at: index)
+        if deselectItemAt(index: indexPath.section) {
             sheetController.reloadActionItems()
-            
-            delegate?.controller?(self, didDeselectAsset: deselectedAsset)
         }
-        
-        supplementaryViews[indexPath.section]?.selected = false
     }
-    
+
+    @discardableResult
+    private func deselectItemAt(index: Int) -> Bool {
+        guard let selectedAssetIndex = selectedAssetIndices.index(of: index) else { return false }
+
+        let deselectedAsset = assets[index]
+        delegate?.controller?(self, willDeselectAsset: deselectedAsset)
+
+        selectedAssetIndices.remove(at: selectedAssetIndex)
+        supplementaryViews[index]?.selected = false
+
+        delegate?.controller?(self, didDeselectAsset: deselectedAsset)
+        return true
+    }
+
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
