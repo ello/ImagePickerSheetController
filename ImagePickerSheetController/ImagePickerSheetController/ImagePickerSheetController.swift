@@ -319,7 +319,7 @@ public class ImagePickerSheetController: UIViewController {
     }
     
     private func reloadMaximumPreviewHeight() {
-        guard UIDevice.current.userInterfaceIdiom == .phone else { return }
+        guard UIDevice.currentDevice().userInterfaceIdiom == .Phone else { return }
         let maxHeight: CGFloat = 400
         let maxImageWidth = view.bounds.width - 2 * sheetInset - 2 * previewInset
 
